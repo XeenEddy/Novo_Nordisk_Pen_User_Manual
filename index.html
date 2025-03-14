@@ -1,95 +1,67 @@
-<html>
-  <head>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://rawgit.com/jeromeetienne/AR.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
-  </head>
-  <body style="margin: 0; overflow: hidden;">
-    <a-scene embedded arjs>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR.js Pop-up Animation</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://rawgit.com/jeromeetienne/AR.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+
+  <a-scene embedded arjs>
+    <!-- MARCADOR (Se activa con un marcador de AR.js) -->
+    <a-marker preset="custom" type="pattern" url="marker1.patt" id="marker">
       
-      <!-- MARCADOR (Se activa con un marcador de AR.js) -->
-<a-marker preset="custom" type="pattern" url="marker1.patt" id="marker">
+      <!-- Contenedor para ajustar la animación de todo el grupo -->
+      <a-entity id="grupo" position="0 0 0" rotation="-90 0 0" scale="0 0 0">
+        <a-animation attribute="scale" to="1 1 1" dur="500" easing="ease-out" begin="popup"></a-animation>
 
-  <!-- Contenedor para ajustar la rotación y posición -->
-  <a-entity id="grupo" position="0 0 0" rotation="-90 0 0">
-    
-    <!-- Imagen central (Pluma) -->
-    <a-image id="pluma" src="pen.png" position="0 0 0" scale="1 1 1" opacity="0">
-      <a-animation attribute="opacity" to="1" dur="1000"></a-animation>
-    </a-image>
+        <!-- Imagen central (Pluma) -->
+        <a-image id="pluma" src="pen.png" position="0 0 0" scale="1 1 1" opacity="0">
+          <a-animation attribute="opacity" to="1" dur="1000"></a-animation>
+        </a-image>
 
-    <!-- Tarjeta 1 (Izquierda arriba) -->
-    <a-image id="tarjeta1" src="card.png" position="-1 0.5 0" scale="0 0 0">
-      <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
-    </a-image>
+        <!-- Tarjeta 1 (Izquierda arriba) -->
+        <a-image id="tarjeta1" src="card.png" position="-1 0.5 0" scale="0 0 0">
+          <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
+        </a-image>
 
-    <!-- Tarjeta 2 (Izquierda abajo) -->
-    <a-image id="tarjeta2" src="card.png" position="-1 -0.5 0" scale="0 0 0">
-      <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
-    </a-image>
+        <!-- Tarjeta 2 (Izquierda abajo) -->
+        <a-image id="tarjeta2" src="card.png" position="-1 -0.5 0" scale="0 0 0">
+          <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
+        </a-image>
 
-    <!-- Tarjeta 3 (Derecha arriba) -->
-    <a-image id="tarjeta3" src="card.png" position="1 0.5 0" scale="0 0 0">
-      <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
-    </a-image>
+        <!-- Tarjeta 3 (Derecha arriba) -->
+        <a-image id="tarjeta3" src="card.png" position="1 0.5 0" scale="0 0 0">
+          <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
+        </a-image>
 
-    <!-- Tarjeta 4 (Derecha abajo) -->
-    <a-image id="tarjeta4" src="card.png" position="1 -0.5 0" scale="0 0 0">
-      <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
-    </a-image>
+        <!-- Tarjeta 4 (Derecha abajo) -->
+        <a-image id="tarjeta4" src="card.png" position="1 -0.5 0" scale="0 0 0">
+          <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
+        </a-image>
 
-  </a-entity>
+      </a-entity>
+      
+    </a-marker>
 
-</a-marker>
+    <!-- Cámara de Realidad Aumentada -->
+    <a-entity camera></a-entity>
+  </a-scene>
 
+  <script>
+    document.querySelector("#marker").addEventListener("markerFound", () => {
+      // Disparar animación de "pop-up" para todo el grupo
+      document.querySelector("#grupo").emit("popup");
 
-      <a-entity camera></a-entity>
-    </a-scene>
+      // Disparar evento para mostrar tarjetas
+      document.querySelector("#tarjeta1").emit("showCards");
+      document.querySelector("#tarjeta2").emit("showCards");
+      document.querySelector("#tarjeta3").emit("showCards");
+      document.querySelector("#tarjeta4").emit("showCards");
+    });
+  </script>
 
-    <script>
-      document.querySelector("#marker").addEventListener("markerFound", () => {
-        // Disparar evento para mostrar tarjetas
-        document.querySelector("#tarjeta1").emit("showCards");
-        document.querySelector("#tarjeta2").emit("showCards");
-        document.querySelector("#tarjeta3").emit("showCards");
-        document.querySelector("#tarjeta4").emit("showCards");
-
-        // Reproducir secuencialmente los audios
-        reproducirAudiosSecuenciales();
-      });
-
-      function reproducirAudiosSecuenciales() {
-        let tarjetas = [
-          { id: "tarjeta1", audio: new Audio("_audio1.wav") },
-          { id: "tarjeta2", audio: new Audio("_audio2.wav") },
-          { id: "tarjeta3", audio: new Audio("_audio3.wav") },
-          { id: "tarjeta4", audio: new Audio("_audio4.wav") },
-        ];
-
-        let index = 0;
-
-        function reproducirSiguiente() {
-          if (index >= tarjetas.length) return; // Terminar si ya no hay más tarjetas
-          let tarjeta = tarjetas[index];
-
-          // Agrandar tarjeta
-          document.querySelector(`#${tarjeta.id}`).setAttribute("scale", "0.6 0.6 0.6");
-
-          // Reproducir audio
-          tarjeta.audio.play();
-          tarjeta.audio.onended = () => {
-            // Regresar tamaño normal
-            document.querySelector(`#${tarjeta.id}`).setAttribute("scale", "0.5 0.5 0.5");
-
-            index++;
-            reproducirSiguiente(); // Pasar a la siguiente
-          };
-        }
-
-        // Comenzar con la primera
-        setTimeout(() => {
-          reproducirSiguiente();
-        }, 1000);
-      }
-    </script>
-  </body>
+</body>
 </html>
