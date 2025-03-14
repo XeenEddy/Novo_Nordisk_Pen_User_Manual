@@ -12,23 +12,28 @@
         <!-- Contenedor para ajustar la rotación y posición -->
         <a-entity id="grupo" position="0 0 0" rotation="-90 0 0">
           
-          <!-- Video 1 -->
-          <a-video id="video1" src="Upcoming releases are to be revealed !!.mp4" position="-1 0.5 0" scale="1 1 1" opacity="1" autoplay="false">
+          <!-- Imagen central (Pluma) -->
+          <a-image id="pluma" src="pen.png" position="0 0 0" scale="1 1 1" opacity="1">
+            <a-animation attribute="opacity" to="1" begin="markerFound" dur="1000"></a-animation>
+          </a-image>
+
+          <!-- Video 1 (Izquierda arriba) -->
+          <a-video id="video1" src="video1.mp4" position="-1 0.5 0" scale="1 1 1" opacity="1" autoplay="false">
             <a-animation attribute="opacity" to="1" begin="markerFound" dur="1000"></a-animation>
           </a-video>
 
-          <!-- Video 2 -->
-          <a-video id="video2" src="Upcoming releases are to be revealed !!.mp4" position="-1 -0.5 0" scale="1 1 1" opacity="1" autoplay="false">
+          <!-- Video 2 (Izquierda abajo) -->
+          <a-video id="video2" src="video2.mp4" position="-1 -0.5 0" scale="1 1 1" opacity="1" autoplay="false">
             <a-animation attribute="opacity" to="1" begin="markerFound" dur="1000"></a-animation>
           </a-video>
 
-          <!-- Video 3 -->
-          <a-video id="video3" src="Upcoming releases are to be revealed !!.mp4" position="1 0.5 0" scale="1 1 1" opacity="1" autoplay="false">
+          <!-- Video 3 (Derecha arriba) -->
+          <a-video id="video3" src="video3.mp4" position="1 0.5 0" scale="1 1 1" opacity="1" autoplay="false">
             <a-animation attribute="opacity" to="1" begin="markerFound" dur="1000"></a-animation>
           </a-video>
 
-          <!-- Video 4 -->
-          <a-video id="video4" src="Upcoming releases are to be revealed !!.mp4" position="1 -0.5 0" scale="1 1 1" opacity="1" autoplay="false">
+          <!-- Video 4 (Derecha abajo) -->
+          <a-video id="video4" src="video4.mp4" position="1 -0.5 0" scale="1 1 1" opacity="1" autoplay="false">
             <a-animation attribute="opacity" to="1" begin="markerFound" dur="1000"></a-animation>
           </a-video>
 
@@ -46,6 +51,28 @@
         // Reproducir los videos de forma secuencial
         reproducirVideosSecuenciales();
       });
+
+      document.querySelector("#marker").addEventListener("markerLost", () => {
+        console.log("Marcador perdido"); // Debug
+
+        // Pausar todos los videos cuando el marcador se pierde
+        pausarVideos();
+      });
+
+      function pausarVideos() {
+        let videos = [
+          document.querySelector("#video1"),
+          document.querySelector("#video2"),
+          document.querySelector("#video3"),
+          document.querySelector("#video4"),
+        ];
+
+        // Pausar todos los videos
+        videos.forEach(video => {
+          video.setAttribute("autoplay", "false");
+          video.pause();
+        });
+      }
 
       function reproducirVideosSecuenciales() {
         let videos = [
