@@ -6,75 +6,40 @@
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://rawgit.com/jeromeetienne/ar.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
     <title>WebAR Video</title>
-    <style>
-        #video-container {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 500px;
-            height: auto;
-            background: black;
-            display: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-        }
-        video {
-            width: 100%;
-            height: auto;
-        }
-        #close-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px;
-        }
-    </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
     <!-- Escena AR -->
     <a-scene embedded arjs>
         <!-- Patrón marcador -->
         <a-marker preset="custom" type="pattern" url="marker1.patt">
-            <!-- <a-box position="0 0.5 0" material="color: red;"></a-box> --> 
+            <!-- Video en 3D flotante -->
+            <a-video 
+                id="video-ar"
+                src="video.mp4"
+                position="0 0 0"
+                rotation="-90 0 0"
+                width="2" height="1">
+            </a-video>
         </a-marker>
         
         <a-camera position="0 0 0"></a-camera>
     </a-scene>
 
-    <!-- Contenedor del video flotante -->
-    <div id="video-container">
-        <button id="close-btn" onclick="cerrarVideo()">X</button>
-        <video id="video" controls>
-            <source src="Upcoming releases are to be revealed !!.mp4" type="video/mp4">
-            Tu navegador no soporta videos.
-        </video>
-    </div>
-
     <script>
-        document.querySelector("a-marker").addEventListener("markerFound", () => {
-            let videoContainer = document.getElementById("video-container");
-            let video = document.getElementById("video");
+        // Obtiene el video
+        let videoAR = document.querySelector("#video-ar");
 
-            videoContainer.style.display = "block"; // Muestra el video
-            if (video.paused) video.play(); // Reproduce el video si está pausado
+        // Cuando el marcador es detectado, reproduce el video
+        document.querySelector("a-marker").addEventListener("markerFound", () => {
+            let videoElement = videoAR.components.material.material.map.image;
+            videoElement.play();
         });
 
-        function cerrarVideo() {
-            let videoContainer = document.getElementById("video-container");
-            let video = document.getElementById("video");
-
-            videoContainer.style.display = "none"; // Oculta el contenedor
-            video.pause(); // Pausa el video
-            video.currentTime = 0; // Reinicia el video al inicio
-        }
+        // Cuando el marcador se pierde, pausa el video
+        document.querySelector("a-marker").addEventListener("markerLost", () => {
+            let videoElement = videoAR.components.material.material.map.image;
+            videoElement.pause();
+        });
     </script>
 </body>
 </html>
