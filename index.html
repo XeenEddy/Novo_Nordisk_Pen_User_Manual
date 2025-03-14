@@ -1,54 +1,89 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html>
+  <head>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://rawgit.com/jeromeetienne/ar.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
-    <title>Novo Nordisk Visual Manual User</title>
-</head>
-<body style="margin: 0; overflow: hidden;">
-    <!-- Escena AR -->
+    <script src="https://rawgit.com/jeromeetienne/AR.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
     <a-scene embedded arjs>
-        <!-- Patrón marcador -->
-        <a-marker preset="custom" type="pattern" url="marker1.patt">
-            <!-- Video en 3D flotante -->
-            <a-video 
-                id="video-ar"
-                src="#video-asset" 
-                position="0 0 0"
-                rotation="-90 0 0"
-                width="2" height="1"
-                static-body> <!-- Esto evitará que se mueva al ser tocado -->
-            </a-video>
-        </a-marker>
-        
-        <a-camera position="0 0 0"></a-camera>
+      
+      <!-- MARCADOR (Se activa con un marcador de AR.js) -->
+      <a-marker preset="custom" type="pattern" url="marker1.patt" id="marker">
+
+        <!-- Imagen central (Pluma) -->
+        <a-image id="pluma" src="pen.png" position="0 0 0" scale="1 1 1" opacity="0">
+          <a-animation attribute="opacity" to="1" dur="1000"></a-animation>
+        </a-image>
+
+        <!-- Tarjeta 1 (Izquierda arriba) -->
+        <a-image id="tarjeta1" src="card.png" position="-1 0.5 0" scale="0 0 0">
+          <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
+        </a-image>
+
+        <!-- Tarjeta 2 (Izquierda abajo) -->
+        <a-image id="tarjeta2" src="card.png" position="-1 -0.5 0" scale="0 0 0">
+          <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
+        </a-image>
+
+        <!-- Tarjeta 3 (Derecha arriba) -->
+        <a-image id="tarjeta3" src="card.png" position="1 0.5 0" scale="0 0 0">
+          <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
+        </a-image>
+
+        <!-- Tarjeta 4 (Derecha abajo) -->
+        <a-image id="tarjeta4" src="card.png" position="1 -0.5 0" scale="0 0 0">
+          <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
+        </a-image>
+
+      </a-marker>
+
+      <a-entity camera></a-entity>
     </a-scene>
 
-    <!-- Definir el asset del video -->
-    <a-assets>
-        <video id="video-asset" src="Upcoming releases are to be revealed !!.mp4" preload="auto"></video>
-    </a-assets>
-
     <script>
-        // Aquí manejamos la reproducción del video directamente
-        const video = document.querySelector('#video-asset');
-        const videoElement = video;
+      document.querySelector("#marker").addEventListener("markerFound", () => {
+        // Disparar evento para mostrar tarjetas
+        document.querySelector("#tarjeta1").emit("showCards");
+        document.querySelector("#tarjeta2").emit("showCards");
+        document.querySelector("#tarjeta3").emit("showCards");
+        document.querySelector("#tarjeta4").emit("showCards");
 
-        // Reproduce el video cuando se detecta el marcador
-        document.querySelector("a-marker").addEventListener("markerFound", () => {
-            if (videoElement.paused) {
-                videoElement.play();
-            }
-        });
+        // Reproducir secuencialmente los audios
+        reproducirAudiosSecuenciales();
+      });
 
-        // Pausa el video cuando el marcador se pierde
-        document.querySelector("a-marker").addEventListener("markerLost", () => {
-            if (!videoElement.paused) {
-                videoElement.pause();
-            }
-        });
+      function reproducirAudiosSecuenciales() {
+        let tarjetas = [
+          { id: "tarjeta1", audio: new Audio("_audio1.mp3") },
+          { id: "tarjeta2", audio: new Audio("_audio2.mp3") },
+          { id: "tarjeta3", audio: new Audio("_audio3.mp3") },
+          { id: "tarjeta4", audio: new Audio("_audio4.mp3") },
+        ];
+
+        let index = 0;
+
+        function reproducirSiguiente() {
+          if (index >= tarjetas.length) return; // Terminar si ya no hay más tarjetas
+          let tarjeta = tarjetas[index];
+
+          // Agrandar tarjeta
+          document.querySelector(`#${tarjeta.id}`).setAttribute("scale", "0.6 0.6 0.6");
+
+          // Reproducir audio
+          tarjeta.audio.play();
+          tarjeta.audio.onended = () => {
+            // Regresar tamaño normal
+            document.querySelector(`#${tarjeta.id}`).setAttribute("scale", "0.5 0.5 0.5");
+
+            index++;
+            reproducirSiguiente(); // Pasar a la siguiente
+          };
+        }
+
+        // Comenzar con la primera
+        setTimeout(() => {
+          reproducirSiguiente();
+        }, 1000);
+      }
     </script>
-</body>
+  </body>
 </html>
