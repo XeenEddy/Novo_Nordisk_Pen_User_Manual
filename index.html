@@ -17,25 +17,29 @@
             <a-animation attribute="opacity" to="1" begin="markerFound" dur="1000"></a-animation>
           </a-image>
 
-          <!-- Video 1 (Izquierda arriba) -->
-          <a-video id="video1" src="toGif.mp4" position="-1 0.5 0" scale="1 1 1" opacity="1" autoplay="false">
-            <a-animation attribute="opacity" to="1" begin="markerFound" dur="1000"></a-animation>
-          </a-video>
+          <!-- Textura 1 (Izquierda arriba) -->
+          <a-image id="textura1" src="ring.png" position="-1 0.5 0" scale="1 1 1" opacity="0" transparent="true">
+            <a-animation attribute="opacity" to="1" begin="textura1-visible" dur="1000"></a-animation>
+            <a-animation attribute="opacity" to="0" begin="textura1-oculta" dur="1000"></a-animation>
+          </a-image>
 
-          <!-- Video 2 (Izquierda abajo) -->
-          <a-video id="video2" src="toGif_2.mp4" position="-1 -0.5 0" scale="1 1 1" opacity="1" autoplay="false">
-            <a-animation attribute="opacity" to="1" begin="markerFound" dur="1000"></a-animation>
-          </a-video>
+          <!-- Textura 2 (Izquierda abajo) -->
+          <a-image id="textura2" src="ring.png" position="-1 -0.5 0" scale="1 1 1" opacity="0" transparent="true">
+            <a-animation attribute="opacity" to="1" begin="textura2-visible" dur="1000"></a-animation>
+            <a-animation attribute="opacity" to="0" begin="textura2-oculta" dur="1000"></a-animation>
+          </a-image>
 
-          <!-- Video 3 (Derecha arriba) -->
-          <a-video id="video3" src="toGif_4.mp4" position="1 0.5 0" scale="1 1 1" opacity="1" autoplay="false">
-            <a-animation attribute="opacity" to="1" begin="markerFound" dur="1000"></a-animation>
-          </a-video>
+          <!-- Textura 3 (Derecha arriba) -->
+          <a-image id="textura3" src="ring.png" position="1 0.5 0" scale="1 1 1" opacity="0" transparent="true">
+            <a-animation attribute="opacity" to="1" begin="textura3-visible" dur="1000"></a-animation>
+            <a-animation attribute="opacity" to="0" begin="textura3-oculta" dur="1000"></a-animation>
+          </a-image>
 
-          <!-- Video 4 (Derecha abajo) -->
-          <a-video id="video4" src="Preview1.mp4" position="1 -0.5 0" scale="1 1 1" opacity="1" autoplay="false">
-            <a-animation attribute="opacity" to="1" begin="markerFound" dur="1000"></a-animation>
-          </a-video>
+          <!-- Textura 4 (Derecha abajo) -->
+          <a-image id="textura4" src="ring.png" position="1 -0.5 0" scale="1 1 1" opacity="0" transparent="true">
+            <a-animation attribute="opacity" to="1" begin="textura4-visible" dur="1000"></a-animation>
+            <a-animation attribute="opacity" to="0" begin="textura4-oculta" dur="1000"></a-animation>
+          </a-image>
 
         </a-entity>
 
@@ -45,71 +49,60 @@
     </a-scene>
 
     <script>
+      let currentTextureIndex = 0; // Índice de la textura actual
+      let textures = []; // Array para almacenar las texturas
+
+      // Inicializar las texturas cuando el DOM esté listo
+      document.addEventListener("DOMContentLoaded", () => {
+        textures = [
+          document.querySelector("#textura1"),
+          document.querySelector("#textura2"),
+          document.querySelector("#textura3"),
+          document.querySelector("#textura4"),
+        ];
+      });
+
+      // Evento cuando se detecta el marcador
       document.querySelector("#marker").addEventListener("markerFound", () => {
         console.log("Marcador detectado"); // Debug
 
-        // Comenzar la secuencia de reproducción de videos
-        reproducirVideosSecuenciales();
+        // Comenzar la secuencia de texturas
+        mostrarTexturasSecuenciales();
       });
 
+      // Evento cuando se pierde el marcador
       document.querySelector("#marker").addEventListener("markerLost", () => {
         console.log("Marcador perdido"); // Debug
 
-        // Pausar todos los videos cuando el marcador se pierde
-        pausarVideos();
+        // Ocultar todas las texturas cuando el marcador se pierde
+        ocultarTexturas();
       });
 
-      function pausarVideos() {
-        let videos = [
-          document.querySelector("#video1"),
-          document.querySelector("#video2"),
-          document.querySelector("#video3"),
-          document.querySelector("#video4"),
-        ];
-
-        // Pausar todos los videos
-        videos.forEach(video => {
-          video.setAttribute("autoplay", "false");
-          video.pause();
+      // Función para ocultar todas las texturas
+      function ocultarTexturas() {
+        textures.forEach(texture => {
+          texture.emit("oculta"); // Oculta la textura
         });
+        currentTextureIndex = 0; // Reiniciar el índice de la textura actual
       }
 
-      function reproducirVideosSecuenciales() {
-        let videos = [
-          { id: "video1", element: document.querySelector("#video1") },
-          { id: "video2", element: document.querySelector("#video2") },
-          { id: "video3", element: document.querySelector("#video3") },
-          { id: "video4", element: document.querySelector("#video4") },
-        ];
-
-        let index = 0;
-
-        function reproducirSiguiente() {
-          if (index >= videos.length) return; // Terminar si ya no hay más videos
-          let video = videos[index];
-
-          // Agrandar el video
-          video.element.setAttribute("scale", "1.2 1.2 1");
-
-          // Reproducir el video
-          video.element.setAttribute("autoplay", "true");
-          video.element.play();
-
-          // Usar promesa para esperar que termine el video antes de continuar
-          video.element.onended = () => {
-            // Reducir el tamaño del video
-            video.element.setAttribute("scale", "1 1 1");
-
-            // Ir al siguiente video
-            index++;
-            reproducirSiguiente(); // Pasar al siguiente
-          };
+      // Función para mostrar las texturas secuencialmente
+      function mostrarTexturasSecuenciales() {
+        if (currentTextureIndex >= textures.length) {
+          currentTextureIndex = 0; // Reiniciar la secuencia si se llega al final
         }
 
-        // Comenzar con el primero
+        const texture = textures[currentTextureIndex];
+
+        // Mostrar la textura actual
+        texture.emit("visible");
+
+        // Ocultar la textura actual después de un tiempo y pasar a la siguiente
         setTimeout(() => {
-          reproducirSiguiente();
-        }, 1000); // Espera antes de iniciar el primer video
+          texture.emit("oculta"); // Oculta la textura actual
+          currentTextureIndex++; // Pasar a la siguiente textura
+          mostrarTexturasSecuenciales(); // Mostrar la siguiente textura
+        }, 2000); // Tiempo que la textura permanece visible (2 segundos)
       }
     </script>
   </body>
