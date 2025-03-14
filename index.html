@@ -53,7 +53,6 @@
       function limpiarAnimaciones(imagen) {
         imagen.removeAttribute("animation__scale");
         imagen.removeAttribute("animation__opacity");
-        imagen.removeAttribute("animation__rotation"); // Limpiar animación de rotación
       }
 
       // Función para animar una imagen con efecto de gelatina
@@ -94,17 +93,6 @@
         setTimeout(callback, 800);
       }
 
-      // Función para iniciar la rotación continua
-      function iniciarRotacion(imagen) {
-        imagen.setAttribute("animation__rotation", {
-          property: "rotation",
-          to: "0 360 0", // Rotación completa en el eje Y
-          dur: 2000, // Duración de la rotación (2 segundos)
-          loop: true, // Repetir indefinidamente
-          easing: "linear", // Movimiento uniforme
-        });
-      }
-
       // Función para iniciar la secuencia de animaciones
       function iniciarSecuencia() {
         // Animar la pluma primero
@@ -113,11 +101,7 @@
           let index = 0;
           function animarSiguiente() {
             if (index >= texturas.length) return; // Terminar si no hay más texturas
-            animarGelatina(texturas[index], () => {
-              // Iniciar rotación después de la animación de gelatina
-              iniciarRotacion(texturas[index]);
-              animarSiguiente(); // Pasar a la siguiente textura
-            });
+            animarGelatina(texturas[index], animarSiguiente);
             index++;
           }
           animarSiguiente(); // Comenzar con la primera textura
