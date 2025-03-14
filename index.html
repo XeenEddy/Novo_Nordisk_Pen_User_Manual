@@ -1,66 +1,69 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AR.js Pop-up Animation</title>
-  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-  <script src="https://rawgit.com/jeromeetienne/AR.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
-</head>
-<body style="margin: 0; overflow: hidden;">
-
-  <a-scene embedded arjs>
-    <!-- MARCADOR (Se activa con un marcador de AR.js) -->
-    <a-marker preset="custom" type="pattern" url="marker1.patt" id="marker">
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://rawgit.com/jeromeetienne/AR.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
+    <a-scene embedded arjs>
       
-      <!-- Contenedor para ajustar la animación de todo el grupo -->
-      <a-entity id="grupo" position="0 0 0" rotation="-90 0 0" scale="0.01 0.01 0.01" visible="false">
-        <a-animation attribute="scale" to="1 1 1" dur="500" easing="ease-out" begin="popup"></a-animation>
-        <a-animation attribute="visible" to="true" begin="popup"></a-animation>
+      <!-- MARCADOR -->
+      <a-marker preset="custom" type="pattern" url="marker.patt" id="marker">
 
         <!-- Imagen central (Pluma) -->
-        <a-image id="pluma" src="pen.png" position="0 0 0" scale="1 1 1" opacity="1"></a-image>
-
-        <!-- Tarjeta 1 (Izquierda arriba) -->
-        <a-image id="tarjeta1" src="card.png" position="-1 0.5 0" scale="0 0 0" visible="false">
-          <a-animation attribute="scale" to="0.5 0.5 0.5" begin="popup" dur="1000"></a-animation>
-          <a-animation attribute="visible" to="true" begin="popup"></a-animation>
+        <a-image id="pluma" src="pen.png" position="0 0 0" scale="1 1 1" opacity="1">
+          <a-animation attribute="opacity" to="1" dur="1000"></a-animation>
         </a-image>
 
-        <!-- Tarjeta 2 (Izquierda abajo) -->
-        <a-image id="tarjeta2" src="card.png" position="-1 -0.5 0" scale="0 0 0" visible="false">
-          <a-animation attribute="scale" to="0.5 0.5 0.5" begin="popup" dur="1000"></a-animation>
-          <a-animation attribute="visible" to="true" begin="popup"></a-animation>
-        </a-image>
+        <!-- Tarjetas -->
+        <a-image id="tarjeta1" src="card.png" position="-1 0.5 0" scale="0 0 0"></a-image>
+        <a-image id="tarjeta2" src="card.png" position="-1 -0.5 0" scale="0 0 0"></a-image>
+        <a-image id="tarjeta3" src="card.png" position="1 0.5 0" scale="0 0 0"></a-image>
+        <a-image id="tarjeta4" src="card.png" position="1 -0.5 0" scale="0 0 0"></a-image>
 
-        <!-- Tarjeta 3 (Derecha arriba) -->
-        <a-image id="tarjeta3" src="card.png" position="1 0.5 0" scale="0 0 0" visible="false">
-          <a-animation attribute="scale" to="0.5 0.5 0.5" begin="popup" dur="1000"></a-animation>
-          <a-animation attribute="visible" to="true" begin="popup"></a-animation>
-        </a-image>
+      </a-marker>
 
-        <!-- Tarjeta 4 (Derecha abajo) -->
-        <a-image id="tarjeta4" src="card.png" position="1 -0.5 0" scale="0 0 0" visible="false">
-          <a-animation attribute="scale" to="0.5 0.5 0.5" begin="popup" dur="1000"></a-animation>
-          <a-animation attribute="visible" to="true" begin="popup"></a-animation>
-        </a-image>
+      <a-entity camera></a-entity>
+    </a-scene>
 
-      </a-entity>
-      
-    </a-marker>
+    <script>
+      document.querySelector("#marker").addEventListener("markerFound", () => {
+        console.log("Marcador detectado. Activando animaciones.");
 
-    <!-- Cámara de Realidad Aumentada -->
-    <a-entity camera></a-entity>
-  </a-scene>
+        let tarjetas = [
+          { id: "tarjeta1", audio: new Audio("_audio1.wav") },
+          { id: "tarjeta2", audio: new Audio("_audio2.wav") },
+          { id: "tarjeta3", audio: new Audio("_audio3.wav") },
+          { id: "tarjeta4", audio: new Audio("_audio4.wav") },
+        ];
 
-  <script>
-    document.querySelector("#marker").addEventListener("markerFound", () => {
-      // Mostrar el grupo y activar la animación
-      let grupo = document.querySelector("#grupo");
-      grupo.setAttribute("visible", "true");
-      grupo.emit("popup");
-    });
-  </script>
+        let index = 0;
 
-</body>
+        function mostrarTarjetaYReproducirAudio() {
+          if (index >= tarjetas.length) return;
+          
+          let tarjeta = tarjetas[index];
+          let elemento = document.querySelector(`#${tarjeta.id}`);
+
+          console.log(`Mostrando ${tarjeta.id}`);
+
+          // Activar la animación de la tarjeta
+          elemento.setAttribute("scale", "0.5 0.5 0.5");
+
+          // Intentar reproducir el audio
+          tarjeta.audio.play().catch(error => console.warn("Error reproduciendo audio:", error));
+
+          tarjeta.audio.onended = () => {
+            console.log(`Audio de ${tarjeta.id} terminado.`);
+            index++;
+            mostrarTarjetaYReproducirAudio();
+          };
+        }
+
+        // Iniciar animación y sonido con retraso
+        setTimeout(() => {
+          mostrarTarjetaYReproducirAudio();
+        }, 1000);
+      });
+    </script>
+  </body>
 </html>
