@@ -91,18 +91,19 @@
           // Agrandar el video
           video.element.setAttribute("scale", "1.2 1.2 1");
 
-          // Reproducir video
+          // Reproducir el video
+          video.element.setAttribute("autoplay", "true");
           video.element.play();
 
-          // Cuando termine el video
-          video.element.addEventListener('ended', () => {
+          // Usar promesa para esperar que termine el video antes de continuar
+          video.element.onended = () => {
             // Reducir el tamaño del video
             video.element.setAttribute("scale", "1 1 1");
 
             // Ir al siguiente video
             index++;
             reproducirSiguiente(); // Pasar al siguiente
-          });
+          };
         }
 
         // Comenzar con el primero
