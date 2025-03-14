@@ -81,8 +81,17 @@
           // Reproducir audio
           tarjeta.audio.play();
           tarjeta.audio.onended = () => {
-            // Regresar tamaño normal
-            document.querySelector(`#${tarjeta.id}`).setAttribute("scale", "0.5 0.5 0.5");
+            // Regresar tamaño normal con efecto popup
+            let tarjetaElement = document.querySelector(`#${tarjeta.id}`);
+            tarjetaElement.setAttribute("scale", "0.5 0.5 0.5");
+
+            // Agregar efecto de popup al terminar
+            tarjetaElement.setAttribute("animation", "property: scale; to: 0.7 0.7 0.7; dur: 300; easing: easeOutQuad");
+
+            // Volver al tamaño normal después del popup
+            setTimeout(() => {
+              tarjetaElement.setAttribute("scale", "0.5 0.5 0.5");
+            }, 300);
 
             index++;
             reproducirSiguiente(); // Pasar a la siguiente
