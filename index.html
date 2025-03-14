@@ -12,30 +12,25 @@
         <!-- Contenedor para ajustar la rotación y posición -->
         <a-entity id="grupo" position="0 0 0" rotation="-90 0 0">
           
-          <!-- Imagen central (Pluma) -->
-          <a-image id="pluma" src="pen.png" position="0 0 0" scale="1 1 1" opacity="1">
+          <!-- Video 1 -->
+          <a-video id="video1" src="video1.mp4" position="-1 0.5 0" scale="1 1 1" opacity="1" autoplay="false">
             <a-animation attribute="opacity" to="1" begin="markerFound" dur="1000"></a-animation>
-          </a-image>
+          </a-video>
 
-          <!-- Tarjeta 1 (Izquierda arriba) -->
-          <a-image id="tarjeta1" src="card.png" position="-1 0.5 0" scale="0.01 0.01 0.01">
-            <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
-          </a-image>
+          <!-- Video 2 -->
+          <a-video id="video2" src="video2.mp4" position="-1 -0.5 0" scale="1 1 1" opacity="1" autoplay="false">
+            <a-animation attribute="opacity" to="1" begin="markerFound" dur="1000"></a-animation>
+          </a-video>
 
-          <!-- Tarjeta 2 (Izquierda abajo) -->
-          <a-image id="tarjeta2" src="card.png" position="-1 -0.5 0" scale="0.01 0.01 0.01">
-            <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
-          </a-image>
+          <!-- Video 3 -->
+          <a-video id="video3" src="video3.mp4" position="1 0.5 0" scale="1 1 1" opacity="1" autoplay="false">
+            <a-animation attribute="opacity" to="1" begin="markerFound" dur="1000"></a-animation>
+          </a-video>
 
-          <!-- Tarjeta 3 (Derecha arriba) -->
-          <a-image id="tarjeta3" src="card.png" position="1 0.5 0" scale="0.01 0.01 0.01">
-            <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
-          </a-image>
-
-          <!-- Tarjeta 4 (Derecha abajo) -->
-          <a-image id="tarjeta4" src="card.png" position="1 -0.5 0" scale="0.01 0.01 0.01">
-            <a-animation attribute="scale" to="0.5 0.5 0.5" begin="showCards" dur="1000"></a-animation>
-          </a-image>
+          <!-- Video 4 -->
+          <a-video id="video4" src="video4.mp4" position="1 -0.5 0" scale="1 1 1" opacity="1" autoplay="false">
+            <a-animation attribute="opacity" to="1" begin="markerFound" dur="1000"></a-animation>
+          </a-video>
 
         </a-entity>
 
@@ -48,60 +43,45 @@
       document.querySelector("#marker").addEventListener("markerFound", () => {
         console.log("Marcador detectado"); // Debug
 
-        // Mostrar pluma
-        document.querySelector("#pluma").setAttribute("opacity", "1");
-
-        // Disparar evento para mostrar tarjetas
-        document.querySelector("#tarjeta1").emit("showCards");
-        document.querySelector("#tarjeta2").emit("showCards");
-        document.querySelector("#tarjeta3").emit("showCards");
-        document.querySelector("#tarjeta4").emit("showCards");
-
-        // Reproducir secuencialmente los audios
-        reproducirAudiosSecuenciales();
+        // Reproducir los videos de forma secuencial
+        reproducirVideosSecuenciales();
       });
 
-      function reproducirAudiosSecuenciales() {
-        let tarjetas = [
-          { id: "tarjeta1", audio: new Audio("_audio1.mp3") },
-          { id: "tarjeta2", audio: new Audio("_audio2.mp3") },
-          { id: "tarjeta3", audio: new Audio("_audio3.mp3") },
-          { id: "tarjeta4", audio: new Audio("_audio4.mp3") },
+      function reproducirVideosSecuenciales() {
+        let videos = [
+          { id: "video1", element: document.querySelector("#video1") },
+          { id: "video2", element: document.querySelector("#video2") },
+          { id: "video3", element: document.querySelector("#video3") },
+          { id: "video4", element: document.querySelector("#video4") },
         ];
 
         let index = 0;
 
         function reproducirSiguiente() {
-          if (index >= tarjetas.length) return; // Terminar si ya no hay más tarjetas
-          let tarjeta = tarjetas[index];
+          if (index >= videos.length) return; // Terminar si ya no hay más videos
+          let video = videos[index];
 
-          // Agrandar tarjeta
-          document.querySelector(`#${tarjeta.id}`).setAttribute("scale", "0.6 0.6 0.6");
+          // Agrandar el video
+          video.element.setAttribute("scale", "1.2 1.2 1");
 
-          // Reproducir audio
-          tarjeta.audio.play();
-          tarjeta.audio.onended = () => {
-            // Regresar tamaño normal con efecto popup
-            let tarjetaElement = document.querySelector(`#${tarjeta.id}`);
-            tarjetaElement.setAttribute("scale", "0.5 0.5 0.5");
+          // Reproducir video
+          video.element.setAttribute("autoplay", "true");
 
-            // Agregar efecto de popup al terminar
-            tarjetaElement.setAttribute("animation", "property: scale; to: 0.7 0.7 0.7; dur: 300; easing: easeOutQuad");
+          // Cuando termine el video
+          video.element.addEventListener('ended', () => {
+            // Reducir el tamaño del video
+            video.element.setAttribute("scale", "1 1 1");
 
-            // Volver al tamaño normal después del popup
-            setTimeout(() => {
-              tarjetaElement.setAttribute("scale", "0.5 0.5 0.5");
-            }, 300);
-
+            // Ir al siguiente video
             index++;
-            reproducirSiguiente(); // Pasar a la siguiente
-          };
+            reproducirSiguiente(); // Pasar al siguiente
+          });
         }
 
-        // Comenzar con la primera
+        // Comenzar con el primero
         setTimeout(() => {
           reproducirSiguiente();
-        }, 1000);
+        }, 1000); // Espera antes de iniciar el primer video
       }
     </script>
   </body>
