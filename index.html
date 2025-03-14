@@ -14,23 +14,22 @@
           
           <!-- Imagen central (Pluma) -->
           <a-image id="pluma" src="pen.png" position="0 0 0" scale="1 1 1" opacity="1">
-            <a-animation attribute="opacity" to="1" begin="markerFound" dur="1000"></a-animation>
           </a-image>
 
           <!-- Textura 1 (Izquierda arriba) -->
-          <a-image id="textura1" src="ring1.png" position="-1 0.5 0" scale="1 1 1" opacity="0" transparent="true">
+          <a-image id="textura1" src="ring1.png" position="-1 0.5 0" scale="1 1 1" opacity="1" transparent="true">
           </a-image>
 
           <!-- Textura 2 (Izquierda abajo) -->
-          <a-image id="textura2" src="ring1.png" position="-1 -0.5 0" scale="1 1 1" opacity="0" transparent="true">
+          <a-image id="textura2" src="ring1.png" position="-1 -0.5 0" scale="1 1 1" opacity="1" transparent="true">
           </a-image>
 
           <!-- Textura 3 (Derecha arriba) -->
-          <a-image id="textura3" src="ring1.png" position="1 0.5 0" scale="1 1 1" opacity="0" transparent="true">
+          <a-image id="textura3" src="ring1.png" position="1 0.5 0" scale="1 1 1" opacity="1" transparent="true">
           </a-image>
 
           <!-- Textura 4 (Derecha abajo) -->
-          <a-image id="textura4" src="ring1.png" position="1 -0.5 0" scale="1 1 1" opacity="0" transparent="true">
+          <a-image id="textura4" src="ring1.png" position="1 -0.5 0" scale="1 1 1" opacity="1" transparent="true">
           </a-image>
 
         </a-entity>
@@ -41,61 +40,33 @@
     </a-scene>
 
     <script>
-      let currentTextureIndex = 0; // Índice de la textura actual
-      let textures = []; // Array para almacenar las texturas
-
-      // Inicializar las texturas cuando el DOM esté listo
-      document.addEventListener("DOMContentLoaded", () => {
-        textures = [
-          document.querySelector("#textura1"),
-          document.querySelector("#textura2"),
-          document.querySelector("#textura3"),
-          document.querySelector("#textura4"),
-        ];
-      });
+      // Obtener referencias a las texturas
+      const textura1 = document.querySelector("#textura1");
+      const textura2 = document.querySelector("#textura2");
+      const textura3 = document.querySelector("#textura3");
+      const textura4 = document.querySelector("#textura4");
 
       // Evento cuando se detecta el marcador
       document.querySelector("#marker").addEventListener("markerFound", () => {
         console.log("Marcador detectado"); // Debug
 
-        // Comenzar la secuencia de texturas
-        mostrarTexturasSecuenciales();
+        // Mostrar todas las texturas
+        textura1.setAttribute("opacity", 1);
+        textura2.setAttribute("opacity", 1);
+        textura3.setAttribute("opacity", 1);
+        textura4.setAttribute("opacity", 1);
       });
 
       // Evento cuando se pierde el marcador
       document.querySelector("#marker").addEventListener("markerLost", () => {
         console.log("Marcador perdido"); // Debug
 
-        // Ocultar todas las texturas cuando el marcador se pierde
-        ocultarTexturas();
+        // Ocultar todas las texturas
+        textura1.setAttribute("opacity", 0);
+        textura2.setAttribute("opacity", 0);
+        textura3.setAttribute("opacity", 0);
+        textura4.setAttribute("opacity", 0);
       });
-
-      // Función para ocultar todas las texturas
-      function ocultarTexturas() {
-        textures.forEach(texture => {
-          texture.emit("oculta"); // Oculta la textura
-        });
-        currentTextureIndex = 0; // Reiniciar el índice de la textura actual
-      }
-
-      // Función para mostrar las texturas secuencialmente
-      function mostrarTexturasSecuenciales() {
-        if (currentTextureIndex >= textures.length) {
-          currentTextureIndex = 0; // Reiniciar la secuencia si se llega al final
-        }
-
-        const texture = textures[currentTextureIndex];
-
-        // Mostrar la textura actual
-        texture.emit("visible");
-
-        // Ocultar la textura actual después de un tiempo y pasar a la siguiente
-        setTimeout(() => {
-          texture.emit("oculta"); // Oculta la textura actual
-          currentTextureIndex++; // Pasar a la siguiente textura
-          mostrarTexturasSecuenciales(); // Mostrar la siguiente textura
-        }, 2000); // Tiempo que la textura permanece visible (2 segundos)
-      }
     </script>
   </body>
 </html>
