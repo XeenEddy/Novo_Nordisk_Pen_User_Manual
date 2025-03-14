@@ -15,7 +15,7 @@
             <!-- Video en 3D flotante -->
             <a-video 
                 id="video-ar"
-                src="video.mp4"
+                src="#video-asset" 
                 position="0 0 0"
                 rotation="-90 0 0"
                 width="2" height="1">
@@ -25,20 +25,28 @@
         <a-camera position="0 0 0"></a-camera>
     </a-scene>
 
-    <script>
-        // Obtiene el video
-        let videoAR = document.querySelector("#video-ar");
+    <!-- Definir el asset del video -->
+    <a-assets>
+        <video id="video-asset" src="Upcoming releases are to be revealed !!.mp4" preload="auto"></video>
+    </a-assets>
 
-        // Cuando el marcador es detectado, reproduce el video
+    <script>
+        // Aquí manejamos la reproducción del video directamente
+        const video = document.querySelector('#video-asset');
+        const videoElement = video;
+
+        // Reproduce el video cuando se detecta el marcador
         document.querySelector("a-marker").addEventListener("markerFound", () => {
-            let videoElement = videoAR.components.material.material.map.image;
-            videoElement.play();
+            if (videoElement.paused) {
+                videoElement.play();
+            }
         });
 
-        // Cuando el marcador se pierde, pausa el video
+        // Pausa el video cuando el marcador se pierde
         document.querySelector("a-marker").addEventListener("markerLost", () => {
-            let videoElement = videoAR.components.material.material.map.image;
-            videoElement.pause();
+            if (!videoElement.paused) {
+                videoElement.pause();
+            }
         });
     </script>
 </body>
