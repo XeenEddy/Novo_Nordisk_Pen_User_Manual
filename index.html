@@ -5,50 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://rawgit.com/jeromeetienne/ar.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
-    <title>Novo Nordisk Visual Manual User</title>
+    <title>WebAR Video</title>
+    <style>
+        #video-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            height: auto;
+            background: black;
+            display: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+        video {
+            width: 100%;
+            height: auto;
+        }
+        #close-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body style="margin: 0; overflow: hidden;">
     <!-- Escena AR -->
     <a-scene embedded arjs>
         <!-- Patrón marcador -->
         <a-marker preset="custom" type="pattern" url="marker1.patt">
-            <!-- Video en 3D flotante -->
-            <a-video 
-                id="video-ar"
-                src="#video-asset" 
-                position="0 0 0"
-                rotation="-90 0 0"
-                width="2" height="1"
-                static-body> <!-- Esto evitará que se mueva al ser tocado -->
-            </a-video>
+            <!-- <a-box position="0 0.5 0" material="color: red;"></a-box> --> 
         </a-marker>
         
         <a-camera position="0 0 0"></a-camera>
     </a-scene>
 
-    <!-- Definir el asset del video -->
-    <a-assets>
-        <video id="video-asset" src="Upcoming releases are to be revealed !!.mp4" preload="auto"></video>
-    </a-assets>
+    <!-- Contenedor del video flotante -->
+    <div id="video-container">
+        <button id="close-btn" onclick="cerrarVideo()">X</button>
+        <video id="video" controls>
+            <source src="Upcoming releases are to be revealed !!.mp4" type="video/mp4">
+            Tu navegador no soporta videos.
+        </video>
+    </div>
 
     <script>
-        // Aquí manejamos la reproducción del video directamente
-        const video = document.querySelector('#video-asset');
-        const videoElement = video;
-
-        // Reproduce el video cuando se detecta el marcador
         document.querySelector("a-marker").addEventListener("markerFound", () => {
-            if (videoElement.paused) {
-                videoElement.play();
-            }
+            let videoContainer = document.getElementById("video-container");
+            let video = document.getElementById("video");
+
+            videoContainer.style.display = "block"; // Muestra el video
+            if (video.paused) video.play(); // Reproduce el video si está pausado
         });
 
-        // Pausa el video cuando el marcador se pierde
-        document.querySelector("a-marker").addEventListener("markerLost", () => {
-            if (!videoElement.paused) {
-                videoElement.pause();
-            }
-        });
+        function cerrarVideo() {
+            let videoContainer = document.getElementById("video-container");
+            let video = document.getElementById("video");
+
+            videoContainer.style.display = "none"; // Oculta el contenedor
+            video.pause(); // Pausa el video
+            video.currentTime = 0; // Reinicia el video al inicio
+        }
     </script>
 </body>
 </html>
