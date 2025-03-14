@@ -14,11 +14,13 @@
           <a-animation attribute="opacity" to="1" dur="1000"></a-animation>
         </a-image>
 
-        <!-- Tarjetas -->
-        <a-image id="tarjeta1" src="card.png" position="-1 0.5 0" scale="0 0 0"></a-image>
-        <a-image id="tarjeta2" src="card.png" position="-1 -0.5 0" scale="0 0 0"></a-image>
-        <a-image id="tarjeta3" src="card.png" position="1 0.5 0" scale="0 0 0"></a-image>
-        <a-image id="tarjeta4" src="card.png" position="1 -0.5 0" scale="0 0 0"></a-image>
+        <!-- Grupo de tarjetas -->
+        <a-entity id="grupoTarjetas" rotation="0 0 0">
+          <a-image id="tarjeta1" src="card.png" position="-1 0.5 0" scale="0 0 0"></a-image>
+          <a-image id="tarjeta2" src="card.png" position="-1 -0.5 0" scale="0 0 0"></a-image>
+          <a-image id="tarjeta3" src="card.png" position="1 0.5 0" scale="0 0 0"></a-image>
+          <a-image id="tarjeta4" src="card.png" position="1 -0.5 0" scale="0 0 0"></a-image>
+        </a-entity>
 
       </a-marker>
 
@@ -63,6 +65,10 @@
         setTimeout(() => {
           mostrarTarjetaYReproducirAudio();
         }, 1000);
+
+        // Aplicar rotación al grupo de tarjetas
+        let grupo = document.querySelector("#grupoTarjetas");
+        grupo.setAttribute("rotation", "0 180 0"); // Ajusta el ángulo según sea necesario
       });
     </script>
   </body>
