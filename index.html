@@ -49,8 +49,17 @@
         document.querySelector("#textura4"),
       ];
 
+      // Función para limpiar animaciones anteriores
+      function limpiarAnimaciones(imagen) {
+        imagen.removeAttribute("animation__scale");
+        imagen.removeAttribute("animation__opacity");
+      }
+
       // Función para animar una imagen con efecto de gelatina
       function animarGelatina(imagen, callback) {
+        // Limpiar animaciones anteriores
+        limpiarAnimaciones(imagen);
+
         // Escala inicial (0) y opacidad (0)
         imagen.setAttribute("scale", "0 0 0");
         imagen.setAttribute("opacity", "0");
@@ -109,12 +118,15 @@
       document.querySelector("#marker").addEventListener("markerLost", () => {
         console.log("Marcador perdido"); // Debug
 
-        // Ocultar todas las imágenes
+        // Ocultar todas las imágenes y limpiar animaciones
         pluma.setAttribute("opacity", "0");
         pluma.setAttribute("scale", "0 0 0");
+        limpiarAnimaciones(pluma);
+
         texturas.forEach(textura => {
           textura.setAttribute("opacity", "0");
           textura.setAttribute("scale", "0 0 0");
+          limpiarAnimaciones(textura);
         });
       });
     </script>
