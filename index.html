@@ -12,9 +12,14 @@
         <!-- Contenedor para ajustar la rotación y posición -->
         <a-entity id="grupo" position="0 0 0" rotation="-90 0 0">
           
-          <!-- Imagen central (Pluma) -->
-          <a-image id="pluma" src="pen.png" position="0 0 0" scale="0 0 0" opacity="0">
-          </a-image>
+          <!-- Modelo 3D central (Reemplaza la pluma) -->
+          <a-entity id="modelo3d" position="0 0 0" scale="0 0 0">
+            <!-- Aquí cargamos el modelo 3D -->
+            <a-entity
+              gltf-model="url(WegovyPen_0_5mG.glb)" <!-- Reemplaza "modelo.glb" con la ruta de tu modelo 3D -->
+              scale="1 1 1"
+            ></a-entity>
+          </a-entity>
 
           <!-- Textura 1 (Izquierda arriba) -->
           <a-image id="textura1" src="ring_1.png" position="-1 0.5 0" scale="0 0 0" opacity="0" transparent="true">
@@ -40,8 +45,8 @@
     </a-scene>
 
     <script>
-      // Obtener referencias a las imágenes
-      const pluma = document.querySelector("#pluma");
+      // Obtener referencias a las imágenes y al modelo 3D
+      const modelo3d = document.querySelector("#modelo3d");
       const texturas = [
         document.querySelector("#textura1"),
         document.querySelector("#textura2"),
@@ -58,38 +63,29 @@
       ];
 
       // Función para limpiar animaciones anteriores
-      function limpiarAnimaciones(imagen) {
-        imagen.removeAttribute("animation__scale");
-        imagen.removeAttribute("animation__opacity");
+      function limpiarAnimaciones(entidad) {
+        entidad.removeAttribute("animation__scale");
       }
 
-      // Función para animar una imagen con efecto de gelatina
-      function animarGelatina(imagen, callback) {
+      // Función para animar una entidad con efecto de popup
+      function animarPopup(entidad, callback) {
         // Limpiar animaciones anteriores
-        limpiarAnimaciones(imagen);
+        limpiarAnimaciones(entidad);
 
-        // Escala inicial (0) y opacidad (0)
-        imagen.setAttribute("scale", "0 0 0");
-        imagen.setAttribute("opacity", "0");
+        // Escala inicial (0)
+        entidad.setAttribute("scale", "0 0 0");
 
-        // Animación de escala (efecto de gelatina)
-        imagen.setAttribute("animation__scale", {
+        // Animación de escala (efecto de popup)
+        entidad.setAttribute("animation__scale", {
           property: "scale",
-          to: "1.2 1.2 1",
+          to: "1.2 1.2 1.2",
           dur: 500,
           easing: "easeOutElastic",
         });
 
-        // Animación de opacidad
-        imagen.setAttribute("animation__opacity", {
-          property: "opacity",
-          to: "1",
-          dur: 500,
-        });
-
-        // Reducir la escala después del efecto de gelatina
+        // Reducir la escala después del efecto de popup
         setTimeout(() => {
-          imagen.setAttribute("animation__scale", {
+          entidad.setAttribute("animation__scale", {
             property: "scale",
             to: "1 1 1",
             dur: 300,
@@ -116,15 +112,15 @@
 
       // Función para iniciar la secuencia de animaciones y audios
       function iniciarSecuencia() {
-        // Animar la pluma primero
-        animarGelatina(pluma, () => {
+        // Animar el modelo 3D primero
+        animarPopup(modelo3d, () => {
           // Luego animar las texturas y reproducir los audios en secuencia
           let index = 0;
           function animarSiguiente() {
             if (index >= texturas.length) return; // Terminar si no hay más texturas
 
             // Animar la textura actual
-            animarGelatina(texturas[index], () => {
+            animarPopup(texturas[index], () => {
               // Reproducir el audio correspondiente
               reproducirAudio(index, () => {
                 // Pasar a la siguiente textura y audio
@@ -147,10 +143,9 @@
       document.querySelector("#marker").addEventListener("markerLost", () => {
         console.log("Marcador perdido"); // Debug
 
-        // Ocultar todas las imágenes y limpiar animaciones
-        pluma.setAttribute("opacity", "0");
-        pluma.setAttribute("scale", "0 0 0");
-        limpiarAnimaciones(pluma);
+        // Ocultar todas las entidades y limpiar animaciones
+        modelo3d.setAttribute("scale", "0 0 0");
+        limpiarAnimaciones(modelo3d);
 
         texturas.forEach(textura => {
           textura.setAttribute("opacity", "0");
